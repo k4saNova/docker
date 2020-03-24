@@ -1,0 +1,41 @@
+version: "3"
+
+# reference
+# - https://www.metabase.com/docs/latest/operations-guide/running-metabase-on-docker.html
+# - https://qiita.com/ITNewcomer/items/73173f032af29175dacd  
+# - https://hepokon365.hatenablog.com/entry/2019/08/26/032709
+#
+# mysqlとmetabaseのユーザ名，パスワードは共通
+# .envで管理する
+
+services:
+  mysql:
+    container_name: mysql
+    image: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=${DBNAME}
+      - MYSQL_USER=${USER}
+      - MYSQL_PASSWORD=${PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASSWORD}
+    volumes:
+      - ./:/var/lib/mysql
+      # Edit here if you need
+      
+  metabase:
+    container_name: metabase
+    image: metabase/metabase
+    ports:
+      - "3000:3000"
+    environment:
+      - MB_DB_TYPE=mysql
+      - MB_DB_HOST=mysql
+      - MB_DB_PORT=3306
+      - MB_DB_DBNAME=${DBNAME}
+      - MB_DB_USER=${USER}
+      - MB_DB_PASS=${PASSWORD}
+      - JAVA_TOOL_OPTIONS=-Xmx2g
+      - JAVA_TIMEZONE=Asia/Tokyo
+    links:
+      - mysql
